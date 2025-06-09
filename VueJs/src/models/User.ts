@@ -3,8 +3,9 @@ export interface User {
     name?: string;
     email?: string;
     password?: string;
-    age?: number;
+    age?: number | null;
     city?: string;
     phone?: string;
     is_active?: boolean;
+    token?: string;
 }

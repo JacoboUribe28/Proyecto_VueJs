@@ -44,7 +44,7 @@
 
 
 <script setup lang="ts">
-import { useUserStore } from '@/store/UserStore';
+import { useUserStore } from '../../../store/UserStore';
 import { PencilIcon, PlusCircleIcon, TrashIcon } from 'lucide-vue-next';
 import { computed, onMounted } from 'vue';
 
