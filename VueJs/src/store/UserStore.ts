@@ -1,5 +1,5 @@
-import type { User } from '@/models/User';
-import UserService from '@/service/UserService';
+import type { User } from '../models/User';
+import UserService from '../service/UserService';
 import { defineStore } from 'pinia';
 
 export const useUserStore = defineStore('userStore', {

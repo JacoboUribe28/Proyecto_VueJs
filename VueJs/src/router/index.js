@@ -16,11 +16,21 @@ const router = createRouter({
                     component: () => import('@/views/Dashboard.vue')
                 },
                 {
+                    path: '/security',
+                    name: 'security',
+                    component: () => import('@/views/pages/securityQuestions/SecurityQuestionsList.vue'),
+                },
+                {
+                    path: '/security-questions/create',
+                    name: 'create-security-question',
+                    component: () => import('@/views/pages/securityQuestions/SecurityQuestionCreate.vue'),
+                },
+                {
                     path: '/users',
                     name: 'users',
                     component: () => import('@/views/pages/users/UserListView.vue'),
                     meta: {
-                        requiresAuth: true // Esta ruta requiere autenticación
+                        // requiresAuth: true // Esta ruta requiere autenticación
                     }
                 },
                 {

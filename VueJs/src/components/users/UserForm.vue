@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useUserStore } from '@/store/UserStore';
-import { UserValidator } from "@/utils/UserValidators";
+import { useUserStore } from '../../store/UserStore';
+import { UserValidator } from "../../utils/UserValidators";
 import Swal from "sweetalert2";
 import { onMounted, reactive, ref } from "vue";
 import { useRouter } from 'vue-router';
