@@ -91,7 +91,7 @@ const submitForm = async () => {
   } finally {
     isSubmitting.value = false;
   }
-  router.push('/security-questions');
+  router.push('/security');
 };
 </script>
 

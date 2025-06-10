@@ -7,6 +7,6 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import UserForm from '@/components/users/UserForm.vue';
+import UserForm from '../../../components/users/UserForm.vue';
 const route = useRoute();
 </script>

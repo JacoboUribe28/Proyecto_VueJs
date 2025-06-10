@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { DigitalSignature } from '../models/DigitalSignature';
 
-const API_URL = import.meta.env.VITE_API_URL + "/digitalSignatures";
+const API_URL = import.meta.env.VITE_API_URL + "/api/digital-signatures/";
 
 class DigitalSignatureService {
     async getDigitalSignatures() {

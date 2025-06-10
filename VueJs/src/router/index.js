@@ -15,16 +15,8 @@ const router = createRouter({
                     name: 'dashboard',
                     component: () => import('@/views/Dashboard.vue')
                 },
-                {
-                    path: '/security',
-                    name: 'security',
-                    component: () => import('@/views/pages/securityQuestions/SecurityQuestionsList.vue'),
-                },
-                {
-                    path: '/security-questions/create',
-                    name: 'create-security-question',
-                    component: () => import('@/views/pages/securityQuestions/SecurityQuestionCreate.vue'),
-                },
+                // RUTAS DE LISTAR
+
                 {
                     path: '/users',
                     name: 'users',
@@ -34,15 +26,108 @@ const router = createRouter({
                     }
                 },
                 {
+                    path: '/devices',
+                    name: 'devices',
+                    component: () => import('@/views/pages/devices/DeviceList.vue'),
+                },
+                 {
+                    path: '/security',
+                    name: 'security',
+                    component: () => import('@/views/pages/securityQuestions/SecurityQuestionsList.vue'),
+                },
+                {
+                    path: '/answers',
+                    name: 'answers',
+                    component: () => import('@/views/pages/answers/AnswerList.vue'),
+                },
+                {
+                    path: 'signatures',
+                    name: 'signatures',
+                    component: () => import('@/views/pages/digitalSignatures/DigitalSignatureList.vue'),
+                },
+
+                // RUTAS DE CREAR
+
+                {
+                    path: '/device/create',
+                    name: 'create-device',
+                    component: () => import('@/views/pages/devices/DeviceCreate.vue'),
+                },
+                {
+                    path: '/security/create',
+                    name: 'create-security-question',
+                    component: () => import('@/views/pages/securityQuestions/SecurityQuestionCreate.vue'),
+                },
+                {
                     path: '/users/create',
                     name: 'users create',
                     component: () => import('@/views/pages/users/UserCreate.vue')
+                },
+                {
+                    path: '/answer/create',
+                    name: 'create-answer',
+                    component: () => import('@/views/pages/answers/AnswerCreate.vue')
+                },
+                {
+                    path: '/signature/create',
+                    name: 'create-signature',
+                    component: () => import('@/views/pages/digitalSignatures/DigitalSignatureCreate.vue')
+                },
+
+                // RUTAS DE ACTUALIZAR 
+
+                {
+                    path: '/device/update/:id',
+                    name: 'update-device',
+                    component: () => import('@/views/pages/devices/DeviceUpdate.vue'),
+                },
+                {
+                    path: '/security/update/:id',
+                    name: 'update-security-question',
+                    component: () => import('@/views/pages/securityQuestions/SecurityQuestionUpdate.vue'),
                 },
                 {
                     path: '/users/update/:id',
                     name: 'users update',
                     component: () => import('@/views/pages/users/UserUpdate.vue')
                 },
+                {
+                    path: '/answer/update/:id',
+                    name: 'update-answer',
+                    component: () => import('@/views/pages/answers/AnswerUpdate.vue')
+                },
+                {
+                    path: '/signature/update/:id',
+                    name: 'update-signature',
+                    component: () => import('@/views/pages/digitalSignatures/DigitalSignatureUpdate.vue')
+                },
+
+                // RUTAS DE VISUALIZAR 1 OBJETO
+
+                {
+                    path: '/device/view/:id',
+                    name: 'view-device',
+                    component: () => import('@/views/pages/devices/DeviceView.vue'),
+                },
+                {
+                    path: '/security/view/:id',
+                    name: 'security-view',
+                    component: () => import('@/views/pages/securityQuestions/SecurityQuestionView.vue'),
+                },
+                {
+                    path: '/answer/view/:id',
+                    name: 'answer-view',
+                    component: () => import('@/views/pages/answers/AnswerView.vue'),
+                },
+                {
+                    path: '/signature/view/:id',
+                    name: 'signature-view',
+                    component: () => import('@/views/pages/digitalSignatures/DigitalSignatureView.vue')
+                },
+                
+                
+                
+               
                 {
                     path: '/login2',
                     name: 'login2',
