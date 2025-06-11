@@ -2,7 +2,7 @@
 import Swal from "sweetalert2";
 import { onMounted, reactive, ref } from "vue";
 import { useRouter } from 'vue-router';
-import { useRoleStore } from '../../store/RoleStore';
+import RoleService from "../../service/RoleService";
 import { RoleValidator } from "../../utils/RoleValidators";
 
 const props = defineProps<{ roleId?: number }>();
@@ -14,7 +14,6 @@ const role = reactive({
 
 const errors = reactive<Record<string, string>>({});
 const isSubmitting = ref(false);
-const store = useRoleStore();
 const router = useRouter();
 
 const validateField = (field: keyof typeof role) => {
@@ -35,7 +34,7 @@ const validateAllFields = () => {
 onMounted(async () => {
     if (props.roleId) {
         try {
-            const response = await store.getRole(props.roleId);
+            const response = await RoleService.getRole(props.roleId);
             if (response.status == 200) {
                 Object.assign(role, response.data);
             }
@@ -52,9 +51,9 @@ const submitForm = async () => {
     try {
         let response;
         if (props.roleId) {
-            response = await store.editRole(props.roleId, role);
+            response = await RoleService.updateRole(props.roleId, role);
         } else {
-            response = await store.addRole(role);
+            response = await RoleService.createRole(role);
         }
         if (response.status === 200 || response.status === 201) {
             Swal.fire({
@@ -103,8 +102,7 @@ const submitForm = async () => {
                 </div>
                 <div class="w-full">
                     <label class="block text-sm font-medium text-gray-700">Descripción:</label>
-                    <input v-model="role.description" type="text" @input="validateField('description')"
-                        @blur="validateField('description')"
+                    <input v-model="role.description" type="text" @input="validateField('description')" @blur="validateField('description')"
                         class="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" />
                     <span class="text-red-500 text-sm" v-if="errors.description">{{ errors.description }}</span>
                 </div>

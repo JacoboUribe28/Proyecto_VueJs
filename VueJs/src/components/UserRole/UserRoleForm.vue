@@ -2,28 +2,25 @@
 import Swal from "sweetalert2";
 import { onMounted, reactive, ref } from "vue";
 import { useRouter } from 'vue-router';
-import { useRoleStore } from '../../store/RoleStore';
-import { useUserRoleStore } from '../../store/UserRoleStore';
-import { useUserStore } from '../../store/UserStore';
+import RoleService from "../../service/RoleService";
+import UserRoleService from "../../service/UserRoleService";
+import UserService from "../../service/UserService";
 import { UserRoleValidator } from "../../utils/UserRoleValidators";
 
 const props = defineProps<{ userRoleId?: number }>();
 
 const userRole = reactive({
-    userId: null,
-    roleId: null,
+    user_id: null,
+    role_id: null,
     startAt: "",
     endAt: "",
 });
 
 const errors = reactive<Record<string, string>>({});
 const isSubmitting = ref(false);
-const store = useUserRoleStore();
-const userStore = useUserStore();
-const roleStore = useRoleStore();
 const router = useRouter();
 
-const users = ref<{ id?: number; name?: string; email?: string; password?: string; age?: number | null; city?: string; phone?: string; is_active?: boolean; token?: string }[]>([]);
+const users = ref<{ id?: number; name?: string; email?: string }[]>([]);
 const roles = ref<{ id?: number; name?: string }[]>([]);
 
 const validateField = (field: keyof typeof userRole) => {
@@ -41,14 +38,34 @@ const validateAllFields = () => {
     });
 };
 
+const fetchUsers = async () => {
+    try {
+        const response = await UserService.getUsers();
+        if (response.status === 200) {
+            users.value = response.data.map((user: any) => ({ id: user.id, name: user.name, email: user.email }));
+        }
+    } catch (error) {
+        console.error("Error al obtener los usuarios:", error);
+    }
+};
+
+const fetchRoles = async () => {
+    try {
+        const response = await RoleService.getRoles();
+        if (response.status === 200) {
+            roles.value = response.data.map((role: any) => ({ id: role.id, name: role.name }));
+        }
+    } catch (error) {
+        console.error("Error al obtener los roles:", error);
+    }
+};
+
 onMounted(async () => {
-    await userStore.fetchUsers?.();
-    await roleStore.fetchRoles?.();
-    users.value = userStore.users || [];
-    roles.value = roleStore.roles || [];
+    await fetchUsers();
+    await fetchRoles();
     if (props.userRoleId) {
         try {
-            const response = await store.getUserRole(props.userRoleId);
+            const response = await UserRoleService.getUserRole(props.userRoleId);
             if (response.status == 200) {
                 Object.assign(userRole, response.data);
             }
@@ -65,9 +82,9 @@ const submitForm = async () => {
     try {
         let response;
         if (props.userRoleId) {
-            response = await store.editUserRole(props.userRoleId, userRole);
+            response = await UserRoleService.updateUserRole(props.userRoleId, userRole);
         } else {
-            response = await store.addUserRole(userRole);
+            response = await UserRoleService.createUserRole(userRole);
         }
         if (response.status === 200 || response.status === 201) {
             Swal.fire({
@@ -110,21 +127,21 @@ const submitForm = async () => {
             <form @submit.prevent="submitForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="w-full">
                     <label class="block text-sm font-medium text-gray-700">Usuario:</label>
-                    <select v-model="userRole.userId"
+                    <select v-model="userRole.user_id"
                         class="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                         <option value="" disabled>Seleccione un usuario</option>
                         <option v-for="u in users" :key="u.id" :value="u.id">{{ u.name }} ({{ u.email }})</option>
                     </select>
-                    <span class="text-red-500 text-sm" v-if="errors.userId">{{ errors.userId }}</span>
+                    <span class="text-red-500 text-sm" v-if="errors.user_id">{{ errors.user_id }}</span>
                 </div>
                 <div class="w-full">
                     <label class="block text-sm font-medium text-gray-700">Rol:</label>
-                    <select v-model="userRole.roleId"
+                    <select v-model="userRole.role_id"
                         class="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                         <option value="" disabled>Seleccione un rol</option>
                         <option v-for="r in roles" :key="r.id" :value="r.id">{{ r.name }}</option>
                     </select>
-                    <span class="text-red-500 text-sm" v-if="errors.roleId">{{ errors.roleId }}</span>
+                    <span class="text-red-500 text-sm" v-if="errors.role_id">{{ errors.role_id }}</span>
                 </div>
                 <div class="w-full">
                     <label class="block text-sm font-medium text-gray-700">Fecha de inicio:</label>

@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { PasswordValidator } from "../../utils/PasswordValidators";
 import Swal from "sweetalert2";
 import { onMounted, reactive, ref } from "vue";
-import { useRouter } from 'vue-router';
-import { usePasswordStore } from '../../store/PasswordStore';
-import { PasswordValidator } from "../../utils/PasswordValidators";
+import { useRouter, useRoute } from "vue-router";
+import PasswordService from "../../service/PasswordService";
 
 const props = defineProps<{ passwordId?: number }>();
 
@@ -15,8 +15,8 @@ const password = reactive({
 
 const errors = reactive<Record<string, string>>({});
 const isSubmitting = ref(false);
-const store = usePasswordStore();
 const router = useRouter();
+const route = useRoute();
 
 const validateField = (field: keyof typeof password) => {
     const result = PasswordValidator.validateField(field, password[field]);
@@ -36,13 +36,17 @@ const validateAllFields = () => {
 onMounted(async () => {
     if (props.passwordId) {
         try {
-            const response = await store.getPassword(props.passwordId);
+            const response = await PasswordService.getPassword(props.passwordId);
             if (response.status == 200) {
                 Object.assign(password, response.data);
             }
         } catch (error) {
             console.error("Error al cargar contraseña:", error);
         }
+    }
+    // Si hay userId en la query, lo guardamos en el objeto password
+    if (route.query.userId) {
+        password.user_id = Number(route.query.userId);
     }
 });
 
@@ -53,9 +57,12 @@ const submitForm = async () => {
     try {
         let response;
         if (props.passwordId) {
-            response = await store.editPassword(props.passwordId, password);
+            response = await PasswordService.updatePassword(props.passwordId, password);
+        } else if (password.user_id) {
+            // Si hay user_id, usar endpoint custom
+            response = await PasswordService.createPasswordForUser(password.user_id, password);
         } else {
-            response = await store.addPassword(password);
+            response = await PasswordService.createPassword(password);
         }
         if (response.status === 200 || response.status === 201) {
             Swal.fire({
@@ -68,7 +75,7 @@ const submitForm = async () => {
         } else {
             Swal.fire({
                 title: 'Error',
-                text: `❌ Código ${response.status}: ${typeof response.data === 'object' && 'message' in response.data ? (response.data as any).message : 'Ocurrió un error'}`,
+                text: `❌ Código ${response.status}: ${response.data?.message || 'Ocurrió un error'}`,
                 icon: 'error',
                 confirmButtonText: 'Intentar de nuevo',
                 timer: 3000

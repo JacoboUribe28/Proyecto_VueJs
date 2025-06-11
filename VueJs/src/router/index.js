@@ -239,6 +239,11 @@ const router = createRouter({
                     component: () => import('@/views/uikit/ListDoc.vue')
                 },
                 {
+                    path: '/passwords',
+                    name: 'passwords',
+                    component: () => import('@/views/pages/passwords/PasswordList.vue'),
+                },
+                {
                     path: '/uikit/tree',
                     name: 'tree',
                     component: () => import('@/views/uikit/TreeDoc.vue')

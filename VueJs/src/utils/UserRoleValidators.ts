@@ -1,9 +1,11 @@
-import { UserRole } from "@/models/UsrRole";
 import { z } from "zod";
+import { UserRole } from "../models/UsrRole";
 
 export class UserRoleValidator {
     private static schema = z.object({
         id: z.number().optional(),
+        userId: z.number({ required_error: 'El usuario es obligatorio.' }),
+        roleId: z.number({ required_error: 'El rol es obligatorio.' }),
         startAt: z.string().min(1, "La fecha de inicio es obligatoria.").optional(),
         endAt: z.string().optional(),
     });
