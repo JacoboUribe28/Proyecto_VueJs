@@ -8,9 +8,9 @@
             </router-link>
 
             <div class="overflow-x-auto">
-                <table class="min-w-full bg-white border border-gray-300 rounded-lg">
-                    <thead class="bg-gray-200 text-gray-700">
+                <table class="min-w-full bg-white border border-gray-300 rounded-lg">                    <thead class="bg-gray-200 text-gray-700">
                         <tr>
+                            <th class="px-4 py-2 border">ID</th>
                             <th class="px-4 py-2 border">Método</th>
                             <th class="px-4 py-2 border">URL</th>
                             <th class="px-4 py-2 border">Acciones</th>
@@ -18,6 +18,7 @@
                     </thead>
                     <tbody>
                         <tr v-for="permission in permissions" :key="permission.id" class="hover:bg-gray-100 transition">
+                            <td class="px-4 py-2 border">{{ permission.id }}</td>
                             <td class="px-4 py-2 border">{{ permission.method }}</td>
                             <td class="px-4 py-2 border">{{ permission.url }}</td>
                             <td class="px-4 py-2 border flex space-x-4">                                <router-link :to="`/permission/view/${permission.id}`"

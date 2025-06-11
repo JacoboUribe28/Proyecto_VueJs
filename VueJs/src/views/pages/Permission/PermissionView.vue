@@ -5,7 +5,7 @@ import PermissionService from "../../../service/PermissionService";
 
 const route = useRoute();
 const permissionId = route.params.id ? Number(route.params.id) : undefined;
-const permission = ref<{ method: string; nurl: string } | null>(null);
+const permission = ref<{ method: string; url: string } | null>(null);
 
 const fetchPermission = async () => {
   if (permissionId) {
@@ -14,7 +14,7 @@ const fetchPermission = async () => {
       if (response.status === 200) {
         permission.value = {
           method: response.data.method ?? "",
-          nurl: response.data.nurl ?? ""
+          url: response.data.url ?? ""
         };
       }
     } catch (error) {
@@ -38,9 +38,8 @@ onMounted(fetchPermission);
           <h2 class="text-2xl font-bold text-gray-800 mb-4">Método</h2>
           <p class="text-gray-900 text-lg font-medium">{{ permission.method }}</p>
         </div>
-        <div class="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-lg shadow-md">
-          <h2 class="text-2xl font-bold text-gray-800 mb-4">URL</h2>
-          <p class="text-gray-900 text-lg font-medium">{{ permission.nurl }}</p>
+        <div class="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-lg shadow-md">          <h2 class="text-2xl font-bold text-gray-800 mb-4">URL</h2>
+          <p class="text-gray-900 text-lg font-medium">{{ permission.url }}</p>
         </div>
       </div>
 

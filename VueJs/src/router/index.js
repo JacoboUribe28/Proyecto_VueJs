@@ -242,8 +242,9 @@ const router = createRouter({
                     name: 'passwords',
                     component: () => import('@/views/pages/passwords/PasswordList.vue'),
                 },
-                {                    path: '/permission',
-                    name: 'permissions',
+                {   
+                    path: '/permission/list',
+                    name: 'permissions list',
                     component: () => import('@/views/pages/Permission/PermissionList.vue'),
                 },
                 {
@@ -376,7 +377,7 @@ const router = createRouter({
                 {
                     path: '/sesion/list',
                     name: 'sesion list',
-                    component: () => import('@/views/pages/session/sessionListView.vue')
+                    component: () => import('@/views/pages/session/sessionList.vue')
                 },
 
             ]
