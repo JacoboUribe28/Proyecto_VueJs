@@ -1,20 +1,15 @@
 <script setup lang="ts">
-import { useUserStore } from '../../store/UserStore';
-import { UserValidator } from "../../utils/UserValidators";
 import Swal from "sweetalert2";
 import { onMounted, reactive, ref } from "vue";
 import { useRouter } from 'vue-router';
+import { useUserStore } from '../../store/UserStore';
+import { UserValidator } from "../../utils/UserValidators";
 
 const props = defineProps<{ userId?: number }>();
 
 const user = reactive({
   name: "",
   email: "",
-  password: "",
-  age: null,
-  city: "",
-  phone: "",
-  is_active: false,
 });
 
 const errors = reactive<Record<string, string>>({});
@@ -46,7 +41,10 @@ onMounted(async () => {
       const response = await store.getUser(props.userId);
       if (response.status == 200) {
         let fetchedUser = response.data
-        Object.assign(user, fetchedUser);
+        Object.assign(user, {
+          name: fetchedUser.name,
+          email: fetchedUser.email
+        });
       }
 
 
@@ -84,7 +82,7 @@ const submitForm = async () => {
     } else {
       Swal.fire({
         title: 'Error',
-        text: `❌ Código ${response.status}: ${response.data?.message || 'Ocurrió un error'}`,
+        text: `❌ Código ${response.status}: ${typeof response.data === 'object' && response.data && 'message' in response.data ? (response.data as any).message : 'Ocurrió un error'}`,
         icon: 'error',
         confirmButtonText: 'Intentar de nuevo',
         timer: 3000
@@ -125,40 +123,6 @@ const submitForm = async () => {
           <input v-model="user.email" type="email" @input="validateField('email')" @blur="validateField('email')"
             class="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" />
           <span class="text-red-500 text-sm" v-if="errors.email">{{ errors.email }}</span>
-        </div>
-
-        <div class="w-full">
-          <label class="block text-sm font-medium text-gray-700">Contraseña:</label>
-          <input v-model="user.password" type="password" @input="validateField('password')"
-            @blur="validateField('password')"
-            class="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" />
-          <span class="text-red-500 text-sm" v-if="errors.password">{{ errors.password }}</span>
-        </div>
-
-        <div class="w-full">
-          <label class="block text-sm font-medium text-gray-700">Edad:</label>
-          <input v-model.number="user.age" type="number" @input="validateField('age')" @blur="validateField('age')"
-            class="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" />
-          <span class="text-red-500 text-sm" v-if="errors.age">{{ errors.age }}</span>
-        </div>
-
-        <div class="w-full">
-          <label class="block text-sm font-medium text-gray-700">Ciudad:</label>
-          <input v-model="user.city" type="text" @input="validateField('city')" @blur="validateField('city')"
-            class="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" />
-        </div>
-
-        <div class="w-full">
-          <label class="block text-sm font-medium text-gray-700">Teléfono:</label>
-          <input v-model="user.phone" type="text" @input="validateField('phone')" @blur="validateField('phone')"
-            class="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" />
-          <span class="text-red-500 text-sm" v-if="errors.phone">{{ errors.phone }}</span>
-        </div>
-
-        <div class="col-span-1 md:col-span-2 flex items-center space-x-2">
-          <input v-model="user.is_active" type="checkbox"
-            class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-          <label class="text-sm font-medium text-gray-700">Activo</label>
         </div>
 
         <div class="col-span-1 md:col-span-2">
