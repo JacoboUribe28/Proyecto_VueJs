@@ -2,10 +2,14 @@
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import AnswerService from "../../../service/AnswerService";
+import UserService from "../../../service/UserService";
+import SecurityQuestionService from "../../../service/SecurityQuestionService";
 
 const route = useRoute();
 const answerId = route.params.id ? Number(route.params.id) : undefined;
 const answer = ref<{ content: string; user_id: number; security_question_id: number } | null>(null);
+const userName = ref<string>("Desconocido");
+const questionName = ref<string>("Desconocido");
 
 const fetchAnswer = async () => {
   if (answerId) {
@@ -17,10 +21,34 @@ const fetchAnswer = async () => {
           user_id: response.data.user_id ?? 0,
           security_question_id: response.data.security_question_id ?? 0,
         };
+        await fetchUserName(answer.value.user_id);
+        await fetchQuestionName(answer.value.security_question_id);
       }
     } catch (error) {
       console.error("Error al obtener la respuesta:", error);
     }
+  }
+};
+
+const fetchUserName = async (userId: number) => {
+  try {
+    const response = await UserService.getUser(userId);
+    if (response.status === 200) {
+      userName.value = response.data.name ?? "Desconocido";
+    }
+  } catch (error) {
+    console.error("Error al obtener el nombre del usuario:", error);
+  }
+};
+
+const fetchQuestionName = async (questionId: number) => {
+  try {
+    const response = await SecurityQuestionService.getSecurityQuestion(questionId);
+    if (response.status === 200) {
+      questionName.value = response.data.name ?? "Desconocido";
+    }
+  } catch (error) {
+    console.error("Error al obtener el nombre de la pregunta de seguridad:", error);
   }
 };
 
@@ -40,12 +68,12 @@ onMounted(fetchAnswer);
           <p class="text-gray-900 text-lg font-medium">{{ answer.content }}</p>
         </div>
         <div class="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-lg shadow-md">
-          <h2 class="text-2xl font-bold text-gray-800 mb-4">ID del Usuario</h2>
-          <p class="text-gray-900 text-lg font-medium">{{ answer.user_id }}</p>
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">Usuario</h2>
+          <p class="text-gray-900 text-lg font-medium">{{ userName }}</p>
         </div>
         <div class="bg-gradient-to-r from-yellow-50 to-yellow-100 p-6 rounded-lg shadow-md">
-          <h2 class="text-2xl font-bold text-gray-800 mb-4">ID de la Pregunta de Seguridad</h2>
-          <p class="text-gray-900 text-lg font-medium">{{ answer.security_question_id }}</p>
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">Pregunta de Seguridad</h2>
+          <p class="text-gray-900 text-lg font-medium">{{ questionName }}</p>
         </div>
       </div>
 

@@ -15,7 +15,9 @@ import DeviceService from "../../../service/DeviceService";
 
 async function createDevice(deviceData: any) {
   try {
-    const response = await DeviceService.createDevice(deviceData);
+    // Asegúrate de obtener el userId adecuado, aquí se usa un valor de ejemplo
+    const userId = 1; // Reemplaza esto con el userId real según tu lógica
+    const response = await DeviceService.createDevice(userId, deviceData);
     if (response.status === 201) {
       console.log("Dispositivo creado con éxito:", response.data);
       // Aquí puedes redirigir o mostrar un mensaje de éxito

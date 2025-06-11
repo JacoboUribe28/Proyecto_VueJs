@@ -87,7 +87,10 @@ const submitForm = async () => {
     if (props.answerId) {
       response = await AnswerService.updateAnswer(props.answerId, answer);
     } else {
-      response = await AnswerService.createAnswer(answer);
+      if (!answer.user_id || !answer.security_question_id) {
+        throw new Error("Debe seleccionar un usuario y una pregunta de seguridad.");
+      }
+      response = await AnswerService.createAnswer(answer.user_id, answer.security_question_id, answer);
     }
 
     if (response.status === 200 || response.status === 201) {

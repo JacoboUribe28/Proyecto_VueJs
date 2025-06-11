@@ -2,10 +2,12 @@
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import DeviceService from "../../../service/DeviceService";
+import UserService from "../../../service/UserService";
 
 const route = useRoute();
 const deviceId = route.params.id ? Number(route.params.id) : undefined;
-const device = ref<{ name: string; ip: string; operating_system: string } | null>(null);
+const device = ref<{ name: string; ip: string; operating_system: string; user_id?: number } | null>(null);
+const userName = ref<string>("Desconocido");
 
 const fetchDevice = async () => {
   if (deviceId) {
@@ -15,12 +17,27 @@ const fetchDevice = async () => {
         device.value = {
           name: response.data.name ?? "",
           ip: response.data.ip ?? "",
-          operating_system: response.data.operating_system ?? ""
+          operating_system: response.data.operating_system ?? "",
+          user_id: response.data.user_id
         };
+        if (device.value.user_id) {
+          await fetchUserName(device.value.user_id);
+        }
       }
     } catch (error) {
       console.error("Error al obtener el dispositivo:", error);
     }
+  }
+};
+
+const fetchUserName = async (userId: number) => {
+  try {
+    const response = await UserService.getUser(userId);
+    if (response.status === 200) {
+      userName.value = response.data.name ?? "Desconocido";
+    }
+  } catch (error) {
+    console.error("Error al obtener el nombre del usuario:", error);
   }
 };
 
@@ -46,6 +63,10 @@ onMounted(fetchDevice);
         <div class="bg-gradient-to-r from-yellow-50 to-yellow-100 p-6 rounded-lg shadow-md">
           <h2 class="text-2xl font-bold text-gray-800 mb-4">Sistema Operativo</h2>
           <p class="text-gray-900 text-lg font-medium">{{ device.operating_system }}</p>
+        </div>
+        <div class="bg-gradient-to-r from-purple-50 to-purple-100 p-6 rounded-lg shadow-md">
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">Usuario</h2>
+          <p class="text-gray-900 text-lg font-medium">{{ userName }}</p>
         </div>
       </div>
 

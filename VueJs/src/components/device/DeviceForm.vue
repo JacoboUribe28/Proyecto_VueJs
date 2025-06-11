@@ -74,7 +74,10 @@ const submitForm = async () => {
     if (props.deviceId) {
       response = await DeviceService.updateDevice(props.deviceId, device);
     } else {
-      response = await DeviceService.createDevice(device);
+      if (!device.user_id) {
+        throw new Error("Debe seleccionar un usuario para el dispositivo.");
+      }
+      response = await DeviceService.createDevice(device.user_id, device);
     }
 
     if (response.status === 200 || response.status === 201) {

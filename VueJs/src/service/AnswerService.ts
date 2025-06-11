@@ -14,8 +14,16 @@ class AnswerService {
         return response;
     }
 
-    async createAnswer(Answer: Answer) {
-        const response = await axios.post<Answer>(API_URL, Answer);
+    async createAnswer(userId: number, securityQuestionId: number, answer: Answer) {
+        const response = await axios.post<Answer>(
+            `${API_URL}user/${userId}/question/${securityQuestionId}`,
+            answer,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
         return response;
     }
 

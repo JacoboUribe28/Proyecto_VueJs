@@ -3,17 +3,22 @@ import { EyeIcon, PencilIcon, PlusCircleIcon, TrashIcon } from "lucide-vue-next"
 import { ref, onMounted } from "vue";
 import Swal from "sweetalert2";
 import DigitalSignatureService from "../../../service/DigitalSignatureService";
+import UserService from "../../../service/UserService";
 
-const signatures = ref<{ id: number; photo: string; id_user: number }[]>([]);
+const signatures = ref<{ id: number; photo: string; user_name: string, user_email: string }[]>([]);
 
 const fetchSignatures = async () => {
   try {
     const response = await DigitalSignatureService.getDigitalSignatures();
     if (response.status === 200) {
+      const usersResponse = await UserService.getUsers();
+      const usersMap = new Map(usersResponse.data.map((user: any) => [user.id, { name: user.name, email: user.email }]));
+
       signatures.value = response.data.map((signature: any) => ({
         id: signature.id,
         photo: signature.photo,
-        id_user: signature.id_user,
+        user_name: usersMap.get(signature.user_id)?.name || "Unknown",
+        user_email: usersMap.get(signature.user_id)?.email || "Unknown",
       }));
     }
   } catch (error) {
@@ -64,7 +69,8 @@ onMounted(fetchSignatures);
           <thead class="bg-gray-200 text-gray-700">
             <tr>
               <th class="px-4 py-2 border">Foto</th>
-              <th class="px-4 py-2 border">ID Usuario</th>
+              <th class="px-4 py-2 border">Nombre de Usuario</th>
+              <th class="px-4 py-2 border">Correo Electrónico</th>
               <th class="px-4 py-2 border">Acciones</th>
             </tr>
           </thead>
@@ -81,7 +87,8 @@ onMounted(fetchSignatures);
                   class="w-16 h-16 object-cover rounded-lg border border-gray-300"
                 />
               </td>
-              <td class="px-4 py-2 border">{{ signature.id_user }}</td>
+              <td class="px-4 py-2 border">{{ signature.user_name }}</td>
+              <td class="px-4 py-2 border">{{ signature.user_email }}</td>
               <td class="px-4 py-2 border flex space-x-4">
                 <router-link
                   :to="`/digital-signature/view/${signature.id}`"

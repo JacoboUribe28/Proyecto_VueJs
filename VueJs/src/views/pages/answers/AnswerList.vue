@@ -3,8 +3,12 @@ import { EyeIcon, PencilIcon, PlusCircleIcon, TrashIcon } from "lucide-vue-next"
 import { ref, onMounted } from "vue";
 import Swal from "sweetalert2";
 import AnswerService from "../../../service/AnswerService";
+import UserService from "../../../service/UserService";
+import SecurityQuestionService from "../../../service/SecurityQuestionService";
 
 const answers = ref<{ id: number; content: string; user_id: number; security_question_id: number }[]>([]);
+const users = ref<{ id: number; name: string }[]>([]);
+const securityQuestions = ref<{ id: number; name: string }[]>([]);
 
 const fetchAnswers = async () => {
   try {
@@ -21,6 +25,27 @@ const fetchAnswers = async () => {
     console.error("Error al obtener las respuestas:", error);
   }
 };
+
+const fetchUsersAndQuestions = async () => {
+  try {
+    const userResponse = await UserService.getUsers();
+    if (userResponse.status === 200) {
+      users.value = userResponse.data.map((user: any) => ({ id: user.id, name: user.name }));
+    }
+
+    const questionResponse = await SecurityQuestionService.getSecurityQuestions();
+    if (questionResponse.status === 200) {
+      securityQuestions.value = questionResponse.data.map((question: any) => ({ id: question.id, name: question.name }));
+    }
+  } catch (error) {
+    console.error("Error al obtener usuarios o preguntas de seguridad:", error);
+  }
+};
+
+onMounted(async () => {
+  await fetchUsersAndQuestions();
+  await fetchAnswers();
+});
 
 const deleteAnswer = async (id: number) => {
   try {
@@ -44,7 +69,15 @@ const deleteAnswer = async (id: number) => {
   }
 };
 
-onMounted(fetchAnswers);
+const getUserName = (userId: number) => {
+  const user = users.value.find((user) => user.id === userId);
+  return user ? user.name : "Desconocido";
+};
+
+const getQuestionName = (questionId: number) => {
+  const question = securityQuestions.value.find((question) => question.id === questionId);
+  return question ? question.name : "Desconocido";
+};
 </script>
 
 <template>
@@ -65,8 +98,8 @@ onMounted(fetchAnswers);
           <thead class="bg-gray-200 text-gray-700">
             <tr>
               <th class="px-4 py-2 border">Contenido</th>
-              <th class="px-4 py-2 border">ID Usuario</th>
-              <th class="px-4 py-2 border">ID Pregunta de Seguridad</th>
+              <th class="px-4 py-2 border">Usuario</th>
+              <th class="px-4 py-2 border">Pregunta de Seguridad</th>
               <th class="px-4 py-2 border">Acciones</th>
             </tr>
           </thead>
@@ -77,29 +110,26 @@ onMounted(fetchAnswers);
               class="hover:bg-gray-100 transition"
             >
               <td class="px-4 py-2 border">{{ answer.content }}</td>
-              <td class="px-4 py-2 border">{{ answer.user_id }}</td>
-              <td class="px-4 py-2 border">{{ answer.security_question_id }}</td>
-              <td class="px-4 py-2 border flex space-x-4">
+              <td class="px-4 py-2 border">{{ getUserName(answer.user_id) }}</td>
+              <td class="px-4 py-2 border">{{ getQuestionName(answer.security_question_id) }}</td>
+              <td class="px-4 py-2 border">
                 <router-link
                   :to="`/answer/view/${answer.id}`"
-                  class="text-green-600 hover:text-green-800 flex items-center"
+                  class="text-green-600 hover:underline mr-2"
                 >
-                  <EyeIcon class="w-5 h-5 mr-1" />
-                  Ver
+                  <EyeIcon class="w-5 h-5 inline" />
                 </router-link>
                 <router-link
-                  :to="`/answer/update/${answer.id}`"
-                  class="text-blue-600 hover:text-blue-800 flex items-center"
+                  :to="`/answer/edit/${answer.id}`"
+                  class="text-blue-600 hover:underline mr-2"
                 >
-                  <PencilIcon class="w-5 h-5 mr-1" />
-                  Editar
+                  <PencilIcon class="w-5 h-5 inline" />
                 </router-link>
                 <button
                   @click="deleteAnswer(answer.id)"
-                  class="text-red-600 hover:text-red-800 flex items-center"
+                  class="text-red-600 hover:underline"
                 >
-                  <TrashIcon class="w-5 h-5 mr-1" />
-                  Eliminar
+                  <TrashIcon class="w-5 h-5 inline" />
                 </button>
               </td>
             </tr>

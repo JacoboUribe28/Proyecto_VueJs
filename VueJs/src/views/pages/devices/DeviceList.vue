@@ -3,21 +3,29 @@ import { EyeIcon, PencilIcon, PlusCircleIcon, TrashIcon } from "lucide-vue-next"
 import { ref, onMounted } from "vue";
 import Swal from "sweetalert2";
 import DeviceService from "../../../service/DeviceService";
+import UserService from "../../../service/UserService";
 
-const devices = ref<{ id: number; name: string; description: string }[]>([]);
+const devices = ref<{ id: number; name: string; operating_system: string; userId: number }[]>([]);
+const users = ref<{ id: number; name: string }[]>([]);
 
-const fetchDevices = async () => {
+const fetchUsersAndDevices = async () => {
   try {
+    const userResponse = await UserService.getUsers();
+    if (userResponse.status === 200) {
+      users.value = userResponse.data.map((user: any) => ({ id: user.id, name: user.name }));
+    }
+
     const response = await DeviceService.getDevices();
     if (response.status === 200) {
       devices.value = response.data.map((device: any) => ({
         id: device.id,
         name: device.name,
-        description: device.description,
+        operating_system: device.operating_system,
+        userId: device.user_id, // Incluir el userId
       }));
     }
   } catch (error) {
-    console.error("Error al obtener los dispositivos:", error);
+    console.error("Error al obtener usuarios o dispositivos:", error);
   }
 };
 
@@ -43,7 +51,12 @@ const deleteDevice = async (id: number) => {
   }
 };
 
-onMounted(fetchDevices);
+const getUserName = (userId: number) => {
+  const user = users.value.find((user) => user.id === userId);
+  return user ? user.name : "Desconocido";
+};
+
+onMounted(fetchUsersAndDevices);
 </script>
 
 <template>
@@ -64,7 +77,8 @@ onMounted(fetchDevices);
           <thead class="bg-gray-200 text-gray-700">
             <tr>
               <th class="px-4 py-2 border">Nombre</th>
-              <th class="px-4 py-2 border">Descripción</th>
+              <th class="px-4 py-2 border">Sistema Operativo</th>
+              <th class="px-4 py-2 border">Usuario</th>
               <th class="px-4 py-2 border">Acciones</th>
             </tr>
           </thead>
@@ -75,28 +89,26 @@ onMounted(fetchDevices);
               class="hover:bg-gray-100 transition"
             >
               <td class="px-4 py-2 border">{{ device.name }}</td>
-              <td class="px-4 py-2 border">{{ device.description }}</td>
+              <td class="px-4 py-2 border">{{ device.operating_system }}</td>
+              <td class="px-4 py-2 border">{{ getUserName(device.userId) }}</td>
               <td class="px-4 py-2 border flex space-x-4">
                 <router-link
                   :to="`/device/view/${device.id}`"
-                  class="text-green-600 hover:text-green-800 flex items-center"
+                  class="text-blue-600 hover:underline mr-2"
                 >
-                  <EyeIcon class="w-5 h-5 mr-1" />
-                  Ver
+                  <EyeIcon class="w-5 h-5 inline" />
                 </router-link>
                 <router-link
-                  :to="`/device/update/${device.id}`"
-                  class="text-blue-600 hover:text-blue-800 flex items-center"
+                  :to="`/device/edit/${device.id}`"
+                  class="text-green-600 hover:underline mr-2"
                 >
-                  <PencilIcon class="w-5 h-5 mr-1" />
-                  Editar
+                  <PencilIcon class="w-5 h-5 inline" />
                 </router-link>
                 <button
                   @click="deleteDevice(device.id)"
-                  class="text-red-600 hover:text-red-800 flex items-center"
+                  class="text-red-600 hover:underline"
                 >
-                  <TrashIcon class="w-5 h-5 mr-1" />
-                  Eliminar
+                  <TrashIcon class="w-5 h-5 inline" />
                 </button>
               </td>
             </tr>

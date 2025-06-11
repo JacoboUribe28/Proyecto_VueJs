@@ -2,19 +2,39 @@
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import DigitalSignatureService from "../../../service/DigitalSignatureService";
+import UserService from "../../../service/UserService";
 
 const route = useRoute();
 const signatureId = route.params.id ? Number(route.params.id) : undefined;
-const signature = ref<{ photo: string; id_user: number } | null>(null);
+const signature = ref<{ photo: string; user_name: string; user_email: string } | null>(null);
 
 const fetchSignature = async () => {
   if (signatureId) {
     try {
       const response = await DigitalSignatureService.getDigitalSignature(signatureId);
+      console.log("Respuesta de la firma digital:", response.data);
       if (response.status === 200) {
+        if (!response.data || !response.data.user_id) {
+          console.error("La firma digital no contiene un user_id válido.");
+          signature.value = {
+            photo: response.data?.photo ?? "",
+            user_name: "Usuario no especificado",
+            user_email: "Correo no especificado",
+          };
+          return;
+        }
+
+        const userResponse = await UserService.getUser(response.data.user_id ?? 0).catch((error) => {
+          if (error.response?.status === 404) {
+            console.error("Usuario no encontrado para la firma digital.");
+            return { data: { name: "Usuario no encontrado", email: "Correo no encontrado" } };
+          }
+          throw error;
+        });
         signature.value = {
           photo: response.data.photo ?? "",
-          id_user: response.data.id_user ?? 0,
+          user_name: userResponse.data.name ?? "Unknown",
+          user_email: userResponse.data.email ?? "Unknown",
         };
       }
     } catch (error) {
@@ -41,9 +61,11 @@ onMounted(fetchSignature);
             class="w-64 h-64 object-cover rounded-lg border border-gray-300"
           />
         </div>
-        <div class="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-lg shadow-md">
-          <h2 class="text-2xl font-bold text-gray-800 mb-4">ID del Usuario</h2>
-          <p class="text-gray-900 text-lg font-medium">{{ signature.id_user }}</p>
+        <div class="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-lg shadow-md space-y-4">
+          <h2 class="text-2xl font-bold text-gray-800">Nombre del Usuario</h2>
+          <p class="text-gray-900 text-lg font-medium">{{ signature.user_name }}</p>
+          <h2 class="text-2xl font-bold text-gray-800">Correo Electrónico</h2>
+          <p class="text-gray-900 text-lg font-medium">{{ signature.user_email }}</p>
         </div>
       </div>
 

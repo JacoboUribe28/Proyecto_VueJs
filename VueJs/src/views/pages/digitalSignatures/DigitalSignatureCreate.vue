@@ -15,7 +15,9 @@ import DigitalSignatureService from "../../../service/DigitalSignatureService";
 
 async function createDigitalSignature(signatureData: any) {
   try {
-    const response = await DigitalSignatureService.createDigitalSignature(signatureData);
+    // Asegúrate de obtener el userId adecuado, aquí se usa un ejemplo estático
+    const userId = 1; // Reemplaza esto con el userId real según tu lógica
+    const response = await DigitalSignatureService.createDigitalSignature(userId, signatureData);
     if (response.status === 201) {
       console.log("Firma digital creada con éxito:", response.data);
       // Aquí puedes redirigir o mostrar un mensaje de éxito

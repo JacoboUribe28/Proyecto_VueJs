@@ -84,7 +84,7 @@ const submitForm = async () => {
     } else {
       Swal.fire({
         title: 'Error',
-        text: `❌ Código ${response.status}: ${response.data?.message || 'Ocurrió un error'}`,
+        text: `❌ Código ${response.status}: ${typeof response.data === 'object' && 'message' in response.data ? (response.data as any).message : 'Ocurrió un error'}`,
         icon: 'error',
         confirmButtonText: 'Intentar de nuevo',
         timer: 3000

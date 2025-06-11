@@ -14,8 +14,8 @@ class DeviceService {
         return response;
     }
 
-    async createDevice(Device: Device) {
-        const response = await axios.post<Device>(API_URL, Device);
+    async createDevice(userId: number, device: Device) {
+        const response = await axios.post<Device>(`${API_URL}user/${userId}`, device);
         return response;
     }
 
