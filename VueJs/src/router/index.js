@@ -30,7 +30,7 @@ const router = createRouter({
                     name: 'devices',
                     component: () => import('@/views/pages/devices/DeviceList.vue'),
                 },
-                 {
+                {
                     path: '/security',
                     name: 'security',
                     component: () => import('@/views/pages/securityQuestions/SecurityQuestionsList.vue'),
@@ -44,6 +44,26 @@ const router = createRouter({
                     path: 'signatures',
                     name: 'signatures',
                     component: () => import('@/views/pages/digitalSignatures/DigitalSignatureList.vue'),
+                },
+                {
+                    path: '/roles',
+                    name: 'roles',
+                    component: () => import('@/views/pages/roles/RoleList.vue'),
+                },
+                {
+                    path: '/userroles',
+                    name: 'userroles',
+                    component: () => import('@/views/pages/userroles/UserRoleList.vue'),
+                },
+                {
+                    path: '/passwords',
+                    name: 'passwords',
+                    component: () => import('@/views/pages/passwords/PasswordList.vue'),
+                },
+                {
+                    path: '/address',
+                    name: 'address',
+                    component: () => import('@/views/pages/address/AddressList.vue'),
                 },
 
                 // RUTAS DE CREAR
@@ -73,6 +93,26 @@ const router = createRouter({
                     name: 'create-signature',
                     component: () => import('@/views/pages/digitalSignatures/DigitalSignatureCreate.vue')
                 },
+                {
+                    path: '/role/create',
+                    name: 'create-role',
+                    component: () => import('@/views/pages/roles/RoleCreate.vue'),
+                },
+                {
+                    path: '/userrole/create',
+                    name: 'create-userrole',
+                    component: () => import('@/views/pages/userroles/UserRoleCreate.vue'),
+                },
+                {
+                    path: '/password/create',
+                    name: 'create-password',
+                    component: () => import('@/views/pages/passwords/PasswordCreate.vue'),
+                },
+                {
+                    path: '/address/create',
+                    name: 'create-address',
+                    component: () => import('@/views/pages/address/AddressCreate.vue'),
+                },
 
                 // RUTAS DE ACTUALIZAR 
 
@@ -101,6 +141,26 @@ const router = createRouter({
                     name: 'update-signature',
                     component: () => import('@/views/pages/digitalSignatures/DigitalSignatureUpdate.vue')
                 },
+                {
+                    path: '/role/update/:id',
+                    name: 'update-role',
+                    component: () => import('@/views/pages/roles/RoleUpdate.vue'),
+                },
+                {
+                    path: '/userrole/update/:id',
+                    name: 'update-userrole',
+                    component: () => import('@/views/pages/userroles/UserRoleUpdate.vue'),
+                },
+                {
+                    path: '/password/update/:id',
+                    name: 'update-password',
+                    component: () => import('@/views/pages/passwords/PasswordUpdate.vue'),
+                },
+                {
+                    path: '/address/update/:id',
+                    name: 'update-address',
+                    component: () => import('@/views/pages/address/AddressUpdate.vue'),
+                },
 
                 // RUTAS DE VISUALIZAR 1 OBJETO
 
@@ -124,10 +184,30 @@ const router = createRouter({
                     name: 'signature-view',
                     component: () => import('@/views/pages/digitalSignatures/DigitalSignatureView.vue')
                 },
-                
-                
-                
-               
+                {
+                    path: '/role/view/:id',
+                    name: 'view-role',
+                    component: () => import('@/views/pages/roles/RoleView.vue'),
+                },
+                {
+                    path: '/userrole/view/:id',
+                    name: 'view-userrole',
+                    component: () => import('@/views/pages/userroles/UserRoleView.vue'),
+                },
+                {
+                    path: '/password/view/:id',
+                    name: 'view-password',
+                    component: () => import('@/views/pages/passwords/PasswordView.vue'),
+                },
+                {
+                    path: '/address/view/:id',
+                    name: 'view-address',
+                    component: () => import('@/views/pages/address/AddressView.vue'),
+                },
+
+
+
+
                 {
                     path: '/login2',
                     name: 'login2',
