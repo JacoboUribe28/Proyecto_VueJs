@@ -6,5 +6,5 @@
 </template>
 
 <script setup lang="ts">
-import AddressForm from '../../../components/Address/AddressForm.vue';
+import AddressForm from '@/components/Address/AddressForm.vue';
 </script>

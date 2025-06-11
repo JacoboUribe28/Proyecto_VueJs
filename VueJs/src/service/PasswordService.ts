@@ -14,18 +14,18 @@ class PasswordService {
         return response;
     }
 
-    async createPassword(password: Password) {
-        const response = await axios.post<Password>(API_URL, password);
+    async createPassword(password: { content: string; startAt: string; endAt: string }) {
+        const response = await axios.post(API_URL, password);
         return response;
     }
 
-    async createPasswordForUser(userId: number, password: Password) {
-        const response = await axios.post<Password>(`${API_URL}/user/${userId}`, password);
+    async createPasswordForUser(userId: number, password: { content: string; startAt: string; endAt: string }) {
+        const response = await axios.post(`${API_URL}/user/${userId}`, password);
         return response;
     }
 
-    async updatePassword(id: number, password: Password) {
-        const response = await axios.put<Password>(`${API_URL}/${id}`, password);
+    async updatePassword(id: number, password: { content: string; endAt: string }) {
+        const response = await axios.put(`${API_URL}/${id}`, password);
         return response;
     }
 

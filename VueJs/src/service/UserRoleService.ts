@@ -14,13 +14,19 @@ class UserRoleService {
         return response;
     }
 
-    async createUserRole(userRole: UserRole) {
-        const response = await axios.post<UserRole>(API_URL, userRole);
-        return response;
+    async createUserRole(userRole: { user_id: number; role_id: number; startAt?: string; endAt?: string }) {
+        // Usar el endpoint custom: /api/user-roles/user/{userId}/role/{roleId}
+        const url = `${API_URL}/user/${userRole.user_id}/role/${userRole.role_id}`;
+        // Enviar fechas si existen
+        const body: any = {};
+        if (userRole.startAt) body.startAt = userRole.startAt;
+        if (userRole.endAt) body.endAt = userRole.endAt;
+        return axios.post(url, body);
     }
 
-    async updateUserRole(id: number, userRole: UserRole) {
-        const response = await axios.put<UserRole>(`${API_URL}/${id}`, userRole);
+    async updateUserRole(id: number, userRole: { role_id: number }) {
+        // Solo permite modificar el rol
+        const response = await axios.put(`${API_URL}/${id}`, { role_id: userRole.role_id });
         return response;
     }
 

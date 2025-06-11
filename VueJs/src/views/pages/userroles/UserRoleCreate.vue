@@ -1,7 +1,11 @@
 <template>
-    <div class="p-8">
-        <h1 class="text-2xl font-bold mb-4">Crear UserRole</h1>
-        <UserRoleForm />
+    <div class="min-h-screen bg-gray-100 p-6">
+        <div class="w-full bg-white shadow-lg rounded-lg p-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">
+                Crear Rol de Usuario
+            </h1>
+            <UserRoleForm />
+        </div>
     </div>
 </template>
 
