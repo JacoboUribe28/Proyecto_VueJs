@@ -1,15 +1,23 @@
 <template>
-    <div>
-        <h1>Crear Usuario</h1>
-        <UserForm @submit="createUser" />
-    </div>
+  <div>
+    <h1>Crear Perfil</h1>
+    <ProfileForm @submit="createProfile" />
+  </div>
 </template>
 
 <script setup lang="ts">
-import UserForm from '../../../components/users/UserForm.vue';
+import { useProfileStore } from '@/store/ProfileStore';
+import { useRouter } from 'vue-router';
+import ProfileForm from '@/components/profile/ProfileForm.vue';
 
-function createUser(userData: any) {
-    // Implement user creation logic here
-    console.log('User data submitted:', userData);
-}
+const store = useProfileStore();
+const router = useRouter();
+
+const createProfile = async (newProfile: { phone: string; photo: string }) => {
+  const response = await store.addProfile(newProfile);
+  // Se asume que la respuesta exitosa es 200 o 201
+  if (response.status === 200 || response.status === 201) {
+    router.push('/profile/list');
+  }
+};
 </script>

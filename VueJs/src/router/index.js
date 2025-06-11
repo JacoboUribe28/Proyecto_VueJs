@@ -308,8 +308,71 @@ const router = createRouter({
                     path: '/documentation',
                     name: 'documentation',
                     component: () => import('@/views/pages/Documentation.vue')
-                }
+                },
+                {
+                    path: '/profile/create',
+                    name: 'profile create',
+                    component: () => import('@/views/pages/Profile/ProfileCreate.vue')
+
+                },
+                {
+                    path: '/profile/update',
+                    name: 'profile update',
+                    component: () => import('@/views/pages/Profile/ProfileUpdate.vue')
+                },
+                {
+                    path: '/profile/list',
+                    name: 'profile list',
+                    component: () => import('@/views/pages/Profile/ProfileListView.vue')
+                },
+                {
+                    path: '/permission/create',
+                    name: 'permission create',
+                    component: () => import('@/views/pages/Permission/PermissionCreate.vue')
+                },
+                {
+                    path: '/permission/update',
+                    name: 'permission update',
+                    component: () => import('@/views/pages/Permission/PermissionUpdate.vue')
+                },
+                {
+                    path: '/permission/list',
+                    name: 'permission list',
+                    component: () => import('@/views/pages/Permission/PermissionListView.vue')
+                },
+                {
+                    path: '/rolepermission/create',
+                    name: 'rolepermission create',
+                    component: () => import('@/views/pages/rolePermission/rolePermissionCreate.vue')
+                },
+                {
+                    path: '/rolepermission/update',
+                    name: 'rolepermission update',
+                    component: () => import('@/views/pages/rolePermission/rolePermissionUpdate.vue')
+                },
+                {
+                    path: '/rolepermission/list',
+                    name: 'rolepermission list',
+                    component: () => import('@/views/pages/rolePermission/RolePermissionList.vue')
+                },
+                {
+                    path: '/sesion/create',
+                    name: 'sesion create',
+                    component: () => import('@/views/pages/session/sessionCreate.vue')
+                },
+                {
+                    path: '/sesion/update',
+                    name: 'sesion update',
+                    component: () => import('@/views/pages/session/sessionUpdate.vue')
+                },
+                {
+                    path: '/sesion/list',
+                    name: 'sesion list',
+                    component: () => import('@/views/pages/session/sessionListView.vue')
+                },
+
             ]
+                
         },
         {
             path: '/landing',

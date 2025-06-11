@@ -1,4 +1,4 @@
-import { Profile } from "@/models/Profile";
+import { Profile } from "../models/Profile";
 import { z } from "zod";
 
 export class ProfileValidator {
@@ -17,3 +17,4 @@ export class ProfileValidator {
         return true;
     }
 }
+

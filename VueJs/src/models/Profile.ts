@@ -1,5 +1,6 @@
 export interface Profile {
     id?: number;
     phone?: string;
-    potho?: string;
+    photo?: string;
+    user_id?: number;
 }

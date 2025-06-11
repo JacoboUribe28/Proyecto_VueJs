@@ -28,3 +28,4 @@ class SessionService {
         await axios.delete(`${API_URL}/${id}`);
     }
 }
+export default new SessionService();

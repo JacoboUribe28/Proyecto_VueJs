@@ -3,5 +3,6 @@ export interface Session {
     token?: string;
     expiration?: Date;
     FACode?: string;
-    state: string;
+    state?: string;
+    user_id?: number
 }
