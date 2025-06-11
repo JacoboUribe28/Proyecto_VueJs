@@ -3,4 +3,5 @@ export interface Password {
     cont?: string;
     startAt?: string;
     endAt?: string;
+    user_id?: number;
 }

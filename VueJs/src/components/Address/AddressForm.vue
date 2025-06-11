@@ -2,7 +2,7 @@
 import Swal from "sweetalert2";
 import { onMounted, reactive, ref } from "vue";
 import { useRouter } from 'vue-router';
-import { useAddressStore } from '../../store/AddressStore';
+import AddressService from "../../service/AddressService";
 import { AddressValidator } from "../../utils/AddressValidators";
 
 const props = defineProps<{ addressId?: number }>();
@@ -10,13 +10,12 @@ const props = defineProps<{ addressId?: number }>();
 const address = reactive({
     street: "",
     number: "",
-    latitude: null,
-    longitude: null,
+    latitude: undefined,
+    longitude: undefined,
 });
 
 const errors = reactive<Record<string, string>>({});
 const isSubmitting = ref(false);
-const store = useAddressStore();
 const router = useRouter();
 
 const validateField = (field: keyof typeof address) => {
@@ -37,7 +36,7 @@ const validateAllFields = () => {
 onMounted(async () => {
     if (props.addressId) {
         try {
-            const response = await store.getAddress(props.addressId);
+            const response = await AddressService.getAddress(props.addressId);
             if (response.status == 200) {
                 Object.assign(address, response.data);
             }
@@ -54,9 +53,9 @@ const submitForm = async () => {
     try {
         let response;
         if (props.addressId) {
-            response = await store.editAddress(props.addressId, address);
+            response = await AddressService.updateAddress(props.addressId, address);
         } else {
-            response = await store.addAddress(address);
+            response = await AddressService.createAddress(address);
         }
         if (response.status === 200 || response.status === 201) {
             Swal.fire({
@@ -69,7 +68,7 @@ const submitForm = async () => {
         } else {
             Swal.fire({
                 title: 'Error',
-                text: `❌ Código ${response.status}: ${response.data?.message || 'Ocurrió un error'}`,
+                text: `❌ Código ${response.status}: ${typeof response.data === 'object' && response.data && 'message' in response.data ? (response.data as any).message : 'Ocurrió un error'}`,
                 icon: 'error',
                 confirmButtonText: 'Intentar de nuevo',
                 timer: 3000
@@ -125,9 +124,13 @@ const submitForm = async () => {
                         class="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" />
                     <span class="text-red-500 text-sm" v-if="errors.longitude">{{ errors.longitude }}</span>
                 </div>
-                <div class="col-span-1 md:col-span-2">
+                <div class="col-span-1 md:col-span-2 flex justify-end space-x-4">
+                    <button type="button" @click="router.push('/users')"
+                        class="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition">
+                        Ir a Usuarios
+                    </button>
                     <button type="submit" :disabled="Object.keys(errors).length > 0 || isSubmitting"
-                        class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400">
+                        class="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400">
                         {{ isSubmitting ? "Enviando..." : props.addressId ? "Actualizar" : "Crear" }}
                     </button>
                 </div>

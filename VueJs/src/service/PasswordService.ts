@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { Password } from '../models/Password';
 
-const API_URL = import.meta.env.VITE_API_URL + '/passwords';
+const API_URL = import.meta.env.VITE_API_URL + '/api//passwords';
 
 class PasswordService {
     async getPasswords() {
@@ -16,6 +16,11 @@ class PasswordService {
 
     async createPassword(password: Password) {
         const response = await axios.post<Password>(API_URL, password);
+        return response;
+    }
+
+    async createPasswordForUser(userId: number, password: Password) {
+        const response = await axios.post<Password>(`${API_URL}/user/${userId}`, password);
         return response;
     }
 

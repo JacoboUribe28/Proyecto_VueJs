@@ -33,6 +33,11 @@
                                     <TrashIcon class="w-5 h-5 mr-1" />
                                     Eliminar
                                 </button>
+                                <router-link :to="`/password/create?userId=${user.id}`"
+                                    class="text-green-600 hover:text-green-800 flex items-center">
+                                    <PlusCircleIcon class="w-5 h-5 mr-1" />
+                                    Crear Contraseña
+                                </router-link>
                             </td>
                         </tr>
                     </tbody>
