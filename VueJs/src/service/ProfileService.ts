@@ -1,7 +1,7 @@
 import axios from "axios";
 import type { Profile } from "../models/Profile";
 
-const API_URL = import.meta.env.VITE_API_URL + "/Profiles";
+const API_URL = import.meta.env.VITE_API_URL + "/api/profiles/";
 
 class ProfileService {
     async getProfiles() {
@@ -28,3 +28,4 @@ class ProfileService {
         await axios.delete(`${API_URL}/${id}`);
     }
 }
+export default new ProfileService();
