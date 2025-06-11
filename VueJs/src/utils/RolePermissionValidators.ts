@@ -1,20 +1,13 @@
-import { RolePermission } from "@/models/RolePermission";
-import {z} from "zod";
+import { z } from "zod";
 
 export class RolePermissionValidator {
     private static schema = z.object({
-        id: z.string().optional(),
-        startAt: z.date().optional(),
-        endAt: z.date().optional(),
-        
+        role_id: z.number().int().positive("El ID del rol debe ser válido.").optional(),
+        permission_id: z.number().int().positive("El ID del permiso debe ser válido.").optional(),
     });
 
-    static validate(rolePermission: RolePermission): boolean {
-        const result = this.schema.safeParse(rolePermission);
-        if (!result.success) {
-            console.error("RolePermission validation failed:", result.error);
-            return false;
-        }
-        return true;
+    static validateField<K extends keyof z.infer<typeof this.schema>>(field: K, value: any) {
+        const fieldSchema = this.schema.pick({ [field]: true } as any);
+        return fieldSchema.safeParse({ [field]: value });
     }
 }

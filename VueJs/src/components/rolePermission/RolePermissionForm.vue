@@ -65,7 +65,7 @@ const submitForm = async () => {
             response = await store.editRolePermission(props.rolPermissionId, rolPermission);
         } else {
             // Crear nuevo perfil
-            response = await store.addRolePermission(rolPermission);
+            response = await store.addRolePermission(rolPermission.role_id, rolPermission.permission_id, rolPermission);
         }
 
         if (response.status === 200 || response.status === 201) {

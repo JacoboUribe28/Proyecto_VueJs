@@ -4,4 +4,5 @@ export interface Session {
     expiration?: Date;
     FACode?: string;
     state?: string;
+    user_id?: number
 }

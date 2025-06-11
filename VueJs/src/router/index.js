@@ -338,17 +338,17 @@ const router = createRouter({
                 {
                     path: '/rolepermission/create',
                     name: 'rolepermission create',
-                    component: () => import('@/views/pages/rolePermission/rolePermissionCreate.vue')
+                    component: () => import('@/views/pages/rolePermission/RolePermissionList.vue')
                 },
                 {
                     path: '/rolepermission/update',
                     name: 'rolepermission update',
-                    component: () => import('@/views/pages/rolePermission/rolePermissionUpdate.vue')
+                    component: () => import('@/views/pages/rolePermission/RolePermissionList.vue')
                 },
                 {
                     path: '/rolepermission/list',
                     name: 'rolepermission list',
-                    component: () => import('@/views/pages/rolePermission/rolePermissionListView.vue')
+                    component: () => import('@/views/pages/rolePermission/RolePermissionList.vue')
                 },
                 {
                     path: '/sesion/create',

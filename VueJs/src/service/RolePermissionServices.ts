@@ -1,7 +1,7 @@
-import axios from "axios";
-import type { RolePermission } from "../models/RolePermission";
+import axios from 'axios';
+import type { RolePermission } from '../models/RolePermission';
 
-const API_URL = import.meta.env.VITE_API_URL + "/role-permissions";
+const API_URL = import.meta.env.VITE_API_URL + "/api/role-permissions/";
 
 class RolePermissionService {
     async getRolePermissions() {
@@ -14,8 +14,16 @@ class RolePermissionService {
         return response;
     }
 
-    async createRolePermission(rolePermission: RolePermission) {
-        const response = await axios.post<RolePermission>(API_URL, rolePermission);
+    async createRolePermission(role_id: number, permission_id: number, rolePermission: RolePermission) {
+        const response = await axios.post<RolePermission>(
+            `${API_URL}role/${role_id}/permission/${permission_id}`,
+            rolePermission,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
         return response;
     }
 
@@ -28,4 +36,5 @@ class RolePermissionService {
         await axios.delete(`${API_URL}/${id}`);
     }
 }
-export default new RolePermissionService;
+
+export default new RolePermissionService();
