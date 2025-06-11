@@ -1,0 +1,54 @@
+import AppLayout from '@/layout/AppLayout.vue';
+import { useAuthStore } from '@/store/Auth';
+import { createRouter, createWebHistory } from 'vue-router';
+
+const router = createRouter({
+    history: createWebHistory(),
+    routes: [
+        {
+            path: '/',
+            component: AppLayout,
+            children: [
+                {
+                    path: '/',
+                    name: 'dashboard',
+                    component: () => import('@/views/Dashboard.vue')
+                },
+                // RUTAS DE PERMISOS
+                {
+                    path: '/permissions',
+                    name: 'permissions',
+                    component: () => import('@/views/pages/Permission/PermissionList.vue')
+                },
+                {
+                    path: '/permissions/create',
+                    name: 'create-permission',
+                    component: () => import('@/views/pages/Permission/PermissionCreate.vue')
+                },
+                {
+                    path: '/permissions/update/:id',
+                    name: 'update-permission',
+                    component: () => import('@/views/pages/Permission/PermissionUpdate.vue')
+                },
+                {
+                    path: '/permissions/view/:id',
+                    name: 'view-permission',
+                    component: () => import('@/views/pages/Permission/PermissionView.vue')
+                },
+                // ... resto de las rutas existentes
+            ]
+        }
+    ]
+});
+
+// Configurar el guardián de ruta
+router.beforeEach((to, from, next) => {
+    const authStore = useAuthStore();
+    if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+        next({ path: '/login2' });
+    } else {
+        next();
+    }
+});
+
+export default router;

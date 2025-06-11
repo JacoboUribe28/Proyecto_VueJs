@@ -17,22 +17,22 @@ const rolePermission = reactive({
 });
 
 const roles = ref<{ id: number; name: string }[]>([]);
-const permissions = ref<{ id: number; name: string }[]>([]);
+const permissions = ref<{ id: number; method: string }[]>([]);
 const errors = reactive<Record<string, string>>({});
 const isSubmitting = ref(false);
 const router = useRouter();
 
-const validateField = (field: "role_id" | "permission_id" | "startAt" | "endAt") => {
+const validateField = (field: keyof typeof rolePermission) => {
   let result;
   if (field === "role_id" || field === "permission_id") {
     result = RolePermissionValidator.validateField(field, rolePermission[field]);
-  } else if (field === "startAt" || field === "endAt") {
-    result = RolePermissionValidator.validateField(field, rolePermission[field]);
-  }
-
-  if (result && !result.success) {
-    errors[field] = result.error.errors[0].message;
+    if (result && !result.success) {
+      errors[field] = result.error.errors[0].message;
+    } else {
+      delete errors[field];
+    }
   } else {
+    // For fields not handled by the validator, clear any previous error
     delete errors[field];
   }
 };
@@ -58,10 +58,16 @@ const fetchPermissions = async () => {
   try {
     const response = await PermissionService.getPermissions();
     if (response.status === 200) {
-      permissions.value = response.data.map((perm: any) => ({ id: perm.id, name: perm.name }));
+      permissions.value = response.data.map((perm: any) => ({ id: perm.id, method: perm.method }));
     }
   } catch (error) {
     console.error("Error al obtener los permisos:", error);
+    Swal.fire({
+      title: "Error",
+      text: "No se pudieron cargar los permisos",
+      icon: "error",
+      confirmButtonText: "OK",
+    });
   }
 };
 
@@ -99,7 +105,11 @@ const submitForm = async () => {
     if (props.rolePermissionId) {
       response = await RolePermissionService.updateRolePermission(
         props.rolePermissionId,
-        rolePermission
+        {
+          ...rolePermission,
+          startAt: rolePermission.startAt ? new Date(rolePermission.startAt) : undefined,
+          endAt: rolePermission.endAt ? new Date(rolePermission.endAt) : undefined,
+        }
       );
     } else {
       if (!rolePermission.role_id || !rolePermission.permission_id) {
@@ -107,10 +117,12 @@ const submitForm = async () => {
       }
 
       response = await RolePermissionService.createRolePermission(
-        rolePermission.startAt,
-        rolePermission.endAt,
         rolePermission.role_id,
-        rolePermission.permission_id
+        rolePermission.permission_id,
+        {
+          startAt: rolePermission.startAt ? new Date(rolePermission.startAt) : undefined,
+          endAt: rolePermission.endAt ? new Date(rolePermission.endAt) : undefined,
+        }
       );
     }
 
@@ -209,9 +221,8 @@ const submitForm = async () => {
             class="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="" disabled>Seleccione un permiso</option>
-            <option v-for="permission in permissions" :key="permission.id" :value="permission.id">
-              {{ permission.name }}
-            </option>
+            <option v-for="permission in permissions" :key="permission.id" :value="permission.id">                {{ permission.method }}
+              </option>
           </select>
           <span class="text-red-500 text-sm" v-if="errors.permission_id">{{ errors.permission_id }}</span>
         </div>

@@ -44,14 +44,40 @@ const submitForm = async () => {
   if (!photo.value) {
     Swal.fire({ title: "Error", text: "Debe seleccionar una foto", icon: "error", confirmButtonText: "OK" });
     return;
-  }
+  }  // Crear el FormData con los datos del perfil
   const formData = new FormData();
   formData.append("phone", phone.value);
-  formData.append("photo", photo.value);
-  formData.append("user_id", userId.value.toString());
+  
+  // Asegurarse de que la foto sea un archivo válido
+  if (photo.value instanceof File) {
+    const photoFile = photo.value;
+    // Verificar el tipo MIME del archivo
+    if (!photoFile.type.startsWith('image/')) {
+      Swal.fire({ 
+        title: "Error", 
+        text: "El archivo debe ser una imagen", 
+        icon: "error", 
+        confirmButtonText: "OK" 
+      });
+      return;
+    }
+    formData.append("photo", photoFile);
+  }
+
+  // Log de depuración
+  console.log('Datos a enviar:');
+  console.log('userId:', userId.value);
+  console.log('phone:', phone.value);
+  console.log('photo:', photo.value instanceof File ? photo.value.name : 'No file');
+  
   isSubmitting.value = true;
   try {
-    const response = await ProfileService.createProfile(userId.value, formData);
+    let response;
+    if (props.profileId) {
+            response = await ProfileService.updateProfile(props.profileId, formData as any);
+    } else {
+      response = await ProfileService.createProfile(userId.value!, formData);
+    }
     if (response.status === 201 || response.status === 200) {
       Swal.fire({
         title: "Éxito",
@@ -62,10 +88,24 @@ const submitForm = async () => {
       }).then(() => {
         router.push('/profile/list');
       });
-    }
-  } catch (error) {
+    }  } catch (error: any) {
     console.error("Error al enviar el perfil:", error);
-    Swal.fire({ title: "Error", text: "Ocurrió un error al enviar el perfil", icon: "error", confirmButtonText: "OK" });
+    
+    // Obtener un mensaje de error más específico
+    let errorMessage = "Ocurrió un error al enviar el perfil";
+    if (error.response) {
+      console.error('Datos del error:', error.response.data);
+      if (error.response.data && error.response.data.message) {
+        errorMessage = error.response.data.message;
+      }
+    }
+
+    Swal.fire({ 
+      title: "Error", 
+      text: errorMessage, 
+      icon: "error", 
+      confirmButtonText: "OK" 
+    });
   } finally {
     isSubmitting.value = false;
   }
@@ -83,8 +123,33 @@ const fetchUsers = async () => {
   }
 };
 
-onMounted(() => {
-  fetchUsers();
+const fetchProfile = async () => {
+  if (props.profileId) {
+    try {
+      const response = await ProfileService.getProfile(props.profileId);
+      if (response.status === 200) {
+        const profileData = response.data;
+        userId.value = profileData.user_id !== undefined ? profileData.user_id : null;
+        phone.value = profileData.phone ?? "";
+        if (profileData.photo) {
+          photoPreview.value = profileData.photo;
+        }
+      }
+    } catch (error) {
+      console.error("Error al cargar el perfil:", error);
+      Swal.fire({
+        title: "Error",
+        text: "No se pudo cargar el perfil",
+        icon: "error",
+        confirmButtonText: "OK"
+      });
+    }
+  }
+};
+
+onMounted(async () => {
+  await fetchUsers();
+  await fetchProfile();
 });
 </script>
 
@@ -123,4 +188,4 @@ onMounted(() => {
       </form>
     </div>
   </div>
-</template>
+</template>a
