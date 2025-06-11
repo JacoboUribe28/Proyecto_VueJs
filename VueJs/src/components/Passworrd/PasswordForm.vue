@@ -4,19 +4,22 @@ import Swal from "sweetalert2";
 import { onMounted, reactive, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import PasswordService from "../../service/PasswordService";
+import UserService from "../../service/UserService";
 
 const props = defineProps<{ passwordId?: number }>();
 
 const password = reactive({
     cont: "",
-    startAt: "",
     endAt: "",
+    startAt: "",
+    user_id: null
 });
 
 const errors = reactive<Record<string, string>>({});
 const isSubmitting = ref(false);
 const router = useRouter();
 const route = useRoute();
+const users = ref<{ id?: number; name?: string; email?: string }[]>([]);
 
 const validateField = (field: keyof typeof password) => {
     const result = PasswordValidator.validateField(field, password[field]);
@@ -34,17 +37,25 @@ const validateAllFields = () => {
 };
 
 onMounted(async () => {
+    // Preload usuarios para selección
+    const userRes = await UserService.getUsers();
+    if (userRes.status === 200) {
+        users.value = userRes.data.map((user: any) => ({ id: user.id, name: user.name, email: user.email }));
+    }
     if (props.passwordId) {
         try {
             const response = await PasswordService.getPassword(props.passwordId);
             if (response.status == 200) {
-                Object.assign(password, response.data);
+                Object.assign(password, {
+                    cont: response.data.cont,
+                    endAt: response.data.endAt,
+                    user_id: response.data.user_id
+                });
             }
         } catch (error) {
             console.error("Error al cargar contraseña:", error);
         }
     }
-    // Si hay userId en la query, lo guardamos en el objeto password
     if (route.query.userId) {
         password.user_id = Number(route.query.userId);
     }
@@ -57,12 +68,24 @@ const submitForm = async () => {
     try {
         let response;
         if (props.passwordId) {
-            response = await PasswordService.updatePassword(props.passwordId, password);
+            // Solo enviar los campos requeridos para update
+            response = await PasswordService.updatePassword(props.passwordId, {
+                cont: password.cont,
+                endAt: password.endAt
+            });
         } else if (password.user_id) {
-            // Si hay user_id, usar endpoint custom
-            response = await PasswordService.createPasswordForUser(password.user_id, password);
+            // En creación, enviar content, startAt y endAt
+            response = await PasswordService.createPasswordForUser(password.user_id, {
+                cont: password.cont,
+                startAt: password.startAt,
+                endAt: password.endAt
+            });
         } else {
-            response = await PasswordService.createPassword(password);
+            response = await PasswordService.createPassword({
+                cont: password.cont,
+                startAt: password.startAt,
+                endAt: password.endAt
+            });
         }
         if (response.status === 200 || response.status === 201) {
             Swal.fire({
@@ -104,22 +127,31 @@ const submitForm = async () => {
             </h2>
             <form @submit.prevent="submitForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="w-full">
+                    <label class="block text-sm font-medium text-gray-700">Usuario:</label>
+                    <select v-model="password.user_id"
+                        class="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                        :disabled="props.passwordId">
+                        <option value="" disabled>Seleccione un usuario</option>
+                        <option v-for="u in users" :key="u.id" :value="u.id">{{ u.name }} ({{ u.email }})</option>
+                    </select>
+                </div>
+                <div class="w-full">
                     <label class="block text-sm font-medium text-gray-700">Contraseña:</label>
                     <input v-model="password.cont" type="password" @input="validateField('cont')"
                         @blur="validateField('cont')"
                         class="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" />
                     <span class="text-red-500 text-sm" v-if="errors.cont">{{ errors.cont }}</span>
                 </div>
-                <div class="w-full">
+                <div class="w-full" v-if="!props.passwordId">
                     <label class="block text-sm font-medium text-gray-700">Fecha de inicio:</label>
-                    <input v-model="password.startAt" type="date" @input="validateField('startAt')"
+                    <input v-model="password.startAt" type="datetime-local" @input="validateField('startAt')"
                         @blur="validateField('startAt')"
                         class="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" />
                     <span class="text-red-500 text-sm" v-if="errors.startAt">{{ errors.startAt }}</span>
                 </div>
                 <div class="w-full">
                     <label class="block text-sm font-medium text-gray-700">Fecha de fin:</label>
-                    <input v-model="password.endAt" type="date" @input="validateField('endAt')"
+                    <input v-model="password.endAt" type="datetime-local" @input="validateField('endAt')"
                         @blur="validateField('endAt')"
                         class="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" />
                     <span class="text-red-500 text-sm" v-if="errors.endAt">{{ errors.endAt }}</span>

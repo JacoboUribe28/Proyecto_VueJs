@@ -1,11 +1,157 @@
 <template>
-    <div class="p-8">
-        <h1 class="text-2xl font-bold mb-4">Detalle de Contraseña</h1>
-        <!-- Aquí puedes mostrar los detalles de la contraseña -->
-        <p>Vista de detalle de contraseña funcionando.</p>
+    <div class="min-h-screen bg-gray-100 p-6 flex items-center justify-center">
+        <div class="w-full max-w-2xl bg-white shadow-lg rounded-lg p-8 space-y-10">
+            <h1 class="text-4xl font-extrabold text-gray-800 text-center border-b pb-6">
+                Detalles de la Contraseña
+            </h1>
+
+            <div v-if="password" class="space-y-10">
+                <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Contenido</h2>
+                    <p class="text-gray-900 text-lg font-medium">{{ password.cont }}</p>
+                </div>
+                <div class="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Fecha de inicio</h2>
+                    <p class="text-gray-900 text-lg font-medium">{{ password.startAt }}</p>
+                </div>
+                <div class="bg-gradient-to-r from-yellow-50 to-yellow-100 p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Fecha de fin</h2>
+                    <p class="text-gray-900 text-lg font-medium">{{ password.endAt }}</p>
+                </div>
+                <div class="bg-gradient-to-r from-purple-50 to-purple-100 p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Usuario</h2>
+                    <p class="text-gray-900 text-lg font-medium">{{ userName }}</p>
+                </div>
+            </div>
+
+            <div v-else class="text-center">
+                <p class="text-gray-600 text-lg">Cargando detalles de la contraseña...</p>
+            </div>
+
+            <div class="text-center">
+                <router-link to="/passwords"
+                    class="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition text-lg font-semibold">
+                    Volver a la lista
+                </router-link>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
-// Aquí puedes importar el store y lógica para mostrar el detalle de la contraseña
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import PasswordService from '../../../service/PasswordService';
+import UserService from '../../../service/UserService';
+
+const route = useRoute();
+const passwordId = route.params.id ? Number(route.params.id) : undefined;
+const password = ref<any>(null);
+const userName = ref<string>("Desconocido");
+
+const fetchPassword = async () => {
+    if (passwordId) {
+        try {
+            const response = await PasswordService.getPassword(passwordId);
+            if (response.status === 200) {
+                password.value = response.data;
+                await fetchUserName(password.value.user_id);
+            }
+        } catch (error) {
+            console.error("Error al obtener la contraseña:", error);
+        }
+    }
+};
+
+const fetchUserName = async (userId: number) => {
+    if (!userId) return;
+    try {
+        const response = await UserService.getUser(userId);
+        if (response.status === 200) {
+            userName.value = response.data.name ?? "Desconocido";
+        }
+    } catch (error) {
+        console.error("Error al obtener el nombre del usuario:", error);
+    }
+};
+
+onMounted(fetchPassword);
 </script>
+
+<style scoped>
+.bg-gradient-to-r {
+    background: linear-gradient(to right, #ebf8ff, #d1fae5);
+}
+
+.shadow-md {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.text-gray-900 {
+    color: #1a202c;
+}
+
+.text-gray-800 {
+    color: #2d3748;
+}
+
+.text-gray-700 {
+    color: #4a5568;
+}
+
+.text-gray-600 {
+    color: #718096;
+}
+
+.text-lg {
+    font-size: 1.125rem;
+}
+
+.text-2xl {
+    font-size: 1.5rem;
+}
+
+.font-medium {
+    font-weight: 500;
+}
+
+.font-semibold {
+    font-weight: 600;
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+.font-extrabold {
+    font-weight: 800;
+}
+
+.rounded-lg {
+    border-radius: 0.5rem;
+}
+
+.p-6 {
+    padding: 1.5rem;
+}
+
+.p-8 {
+    padding: 2rem;
+}
+
+.pb-6 {
+    padding-bottom: 1.5rem;
+}
+
+.space-y-10>*+* {
+    margin-top: 2.5rem;
+}
+
+.hover\:bg-blue-700:hover {
+    background-color: #2b6cb0;
+}
+
+.transition {
+    transition: all 0.2s ease-in-out;
+}
+</style>

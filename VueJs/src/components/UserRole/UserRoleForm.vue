@@ -82,9 +82,17 @@ const submitForm = async () => {
     try {
         let response;
         if (props.userRoleId) {
-            response = await UserRoleService.updateUserRole(props.userRoleId, userRole);
+            // Solo enviar el rol para actualizar
+            response = await UserRoleService.updateUserRole(props.userRoleId, {
+                role_id: userRole.role_id
+            });
         } else {
-            response = await UserRoleService.createUserRole(userRole);
+            response = await UserRoleService.createUserRole({
+                user_id: userRole.user_id,
+                role_id: userRole.role_id,
+                startAt: userRole.startAt,
+                endAt: userRole.endAt
+            });
         }
         if (response.status === 200 || response.status === 201) {
             Swal.fire({
@@ -128,7 +136,8 @@ const submitForm = async () => {
                 <div class="w-full">
                     <label class="block text-sm font-medium text-gray-700">Usuario:</label>
                     <select v-model="userRole.user_id"
-                        class="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        class="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                        :disabled="props.userRoleId">
                         <option value="" disabled>Seleccione un usuario</option>
                         <option v-for="u in users" :key="u.id" :value="u.id">{{ u.name }} ({{ u.email }})</option>
                     </select>
@@ -147,14 +156,16 @@ const submitForm = async () => {
                     <label class="block text-sm font-medium text-gray-700">Fecha de inicio:</label>
                     <input v-model="userRole.startAt" type="date" @input="validateField('startAt')"
                         @blur="validateField('startAt')"
-                        class="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" />
+                        class="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                        :disabled="props.userRoleId" />
                     <span class="text-red-500 text-sm" v-if="errors.startAt">{{ errors.startAt }}</span>
                 </div>
                 <div class="w-full">
                     <label class="block text-sm font-medium text-gray-700">Fecha de fin:</label>
                     <input v-model="userRole.endAt" type="date" @input="validateField('endAt')"
                         @blur="validateField('endAt')"
-                        class="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" />
+                        class="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                        :disabled="props.userRoleId" />
                     <span class="text-red-500 text-sm" v-if="errors.endAt">{{ errors.endAt }}</span>
                 </div>
                 <div class="col-span-1 md:col-span-2">
