@@ -6,6 +6,7 @@ import Aura from '@primevue/themes/aura';
 import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
 import ToastService from 'primevue/toastservice';
+import vue3GoogleLogin from 'vue3-google-login'
 
 import '@/assets/styles.scss';
 import '@/assets/tailwind.css';
@@ -16,6 +17,9 @@ const app = createApp(App);
 
 const pinia = createPinia();
 
+app.use(vue3GoogleLogin, {
+  clientId: '678353782919-qrlp5h2etndmjuirt39spe02aitk1i7i.apps.googleusercontent.com'
+})
 app.use(pinia); // 👈 Registrar Pinia antes de usarlo
 app.use(router);
 app.use(PrimeVue, {
