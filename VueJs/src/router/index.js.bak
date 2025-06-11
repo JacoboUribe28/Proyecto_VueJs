@@ -1,5 +1,9 @@
 import AppLayout from '@/layout/AppLayout.vue';
-import { useAuthStore } from '@/store/Auth';
+im                {
+                    path: '/permissions',
+                    name: 'permissions',
+                    component: () => import('@/views/pages/Permission/PermissionList.vue'),
+                },{ useAuthStore } from '@/store/Auth';
 import { createRouter, createWebHistory } from 'vue-router';
 
 
@@ -44,11 +48,15 @@ const router = createRouter({
                     path: 'signatures',
                     name: 'signatures',
                     component: () => import('@/views/pages/digitalSignatures/DigitalSignatureList.vue'),
-                },
-                {
+                },                {
                     path: '/roles',
                     name: 'roles',
                     component: () => import('@/views/pages/roles/RoleList.vue'),
+                },
+                {
+                    path: '/permissions',
+                    name: 'permissions',
+                    component: () => import('@/views/pages/Permission/PermissionList.vue'),
                 },
                 {
                     path: '/userroles',
@@ -66,8 +74,11 @@ const router = createRouter({
                     component: () => import('@/views/pages/address/AddressList.vue'),
                 },
 
-                // RUTAS DE CREAR
-
+                // RUTAS DE CREAR                {
+                    path: '/permissions/create',
+                    name: 'create-permission',
+                    component: () => import('@/views/pages/Permission/PermissionCreate.vue'),
+                },
                 {
                     path: '/device/create',
                     name: 'create-device',
@@ -237,29 +248,11 @@ const router = createRouter({
                     path: '/uikit/list',
                     name: 'list',
                     component: () => import('@/views/uikit/ListDoc.vue')
-                },                {
+                },
+                {
                     path: '/passwords',
                     name: 'passwords',
                     component: () => import('@/views/pages/passwords/PasswordList.vue'),
-                },
-                {                    path: '/permission',
-                    name: 'permissions',
-                    component: () => import('@/views/pages/Permission/PermissionList.vue'),
-                },
-                {
-                    path: '/permission/create',
-                    name: 'create-permission',
-                    component: () => import('@/views/pages/Permission/PermissionCreate.vue'),
-                },
-                {
-                    path: '/permission/update/:id',
-                    name: 'update-permission',
-                    component: () => import('@/views/pages/Permission/PermissionUpdate.vue'),
-                },
-                {
-                    path: '/permission/view/:id',
-                    name: 'view-permission',
-                    component: () => import('@/views/pages/Permission/PermissionView.vue'),
                 },
                 {
                     path: '/uikit/tree',
@@ -342,6 +335,20 @@ const router = createRouter({
                     path: '/profile/list',
                     name: 'profile list',
                     component: () => import('@/views/pages/Profile/ProfileListView.vue')
+                },                {
+                    path: '/permissions',
+                    name: 'permissions',
+                    component: () => import('@/views/pages/Permission/PermissionList.vue')
+                },
+                {
+                    path: '/permissions/create',
+                    name: 'create-permission',
+                    component: () => import('@/views/pages/Permission/PermissionCreate.vue')
+                },
+                {
+                    path: '/permissions/update/:id',
+                    name: 'update-permission',
+                    component: () => import('@/views/pages/Permission/PermissionUpdate.vue')
                 },
                 {
                     path: '/rolepermission/create',

@@ -8,7 +8,7 @@ import PermissionService from "../../../service/PermissionService";
 
 const rolePermissions = ref<{ id: number; role_id: number; permission_id: number }[]>([]);
 const roles = ref<{ id: number; name: string }[]>([]);
-const permissions = ref<{ id: number; name: string }[]>([]);
+const permissions = ref<{ id: number; method: string }[]>([]);
 
 const fetchRolePermissions = async () => {
   try {
@@ -30,11 +30,9 @@ const fetchRolesAndPermissions = async () => {
     const roleResponse = await RoleService.getRoles();
     if (roleResponse.status === 200) {
       roles.value = roleResponse.data.map((role: any) => ({ id: role.id, name: role.name }));
-    }
-
-    const permissionResponse = await PermissionService.getPermissions();
+    }    const permissionResponse = await PermissionService.getPermissions();
     if (permissionResponse.status === 200) {
-      permissions.value = permissionResponse.data.map((permission: any) => ({ id: permission.id, name: permission.name }));
+      permissions.value = permissionResponse.data.map((permission: any) => ({ id: permission.id, method: permission.method }));
     }
   } catch (error) {
     console.error("Error al obtener roles o permisos:", error);
@@ -75,7 +73,7 @@ const getRoleName = (roleId: number) => {
 
 const getPermissionName = (permissionId: number) => {
   const permission = permissions.value.find((permission) => permission.id === permissionId);
-  return permission ? permission.name : "Desconocido";
+  return permission ? permission.method : "Desconocido";
 };
 </script>
 
