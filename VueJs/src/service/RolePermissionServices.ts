@@ -14,18 +14,22 @@ class RolePermissionService {
         return response;
     }
 
-    async createRolePermission(role_id: number, permission_id: number, rolePermission: RolePermission) {
-        const response = await axios.post<RolePermission>(
-            `${API_URL}role/${role_id}/permission/${permission_id}`,
-            rolePermission,
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            }
-        );
-        return response;
-    }
+    async createRolePermission(
+    role_id: number,
+    permission_id: number,
+    rolePermission: Omit<RolePermission, "role_id" | "permission_id" | "id">
+  ) {
+    const response = await axios.post<RolePermission>(
+      `${API_URL}role/${role_id}/permission/${permission_id}`,
+      rolePermission,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response;
+  }
 
     async updateRolePermission(id: number, rolePermission: RolePermission) {
         const response = await axios.put<RolePermission>(`${API_URL}/${id}`, rolePermission);

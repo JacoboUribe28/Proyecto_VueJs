@@ -343,12 +343,12 @@ const router = createRouter({
                 {
                     path: '/rolepermission/create',
                     name: 'rolepermission create',
-                    component: () => import('@/views/pages/rolePermission/RolePermissionList.vue')
+                    component: () => import('@/views/pages/rolePermission/rolePermissionCreate.vue')
                 },
                 {
                     path: '/rolepermission/update',
                     name: 'rolepermission update',
-                    component: () => import('@/views/pages/rolePermission/RolePermissionList.vue')
+                    component: () => import('@/views/pages/rolePermission/rolePermissionUpdate.vue')
                 },
                 {
                     path: '/rolepermission/list',
