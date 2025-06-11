@@ -21,7 +21,7 @@
                     </thead>
                     <tbody>
                         <tr v-for="password in passwords" :key="password.id" class="hover:bg-gray-100 transition">
-                            <td class="px-4 py-2 border">{{ password.cont }}</td>
+                            <td class="px-4 py-2 border">{{ password.content }}</td>
                             <td class="px-4 py-2 border">{{ password.endAt }}</td>
                             <td class="px-4 py-2 border">{{ getUserName(password.user_id) }}</td>
                             <td class="px-4 py-2 border flex space-x-4">
@@ -35,7 +35,7 @@
                                     <PencilIcon class="w-5 h-5 mr-1" />
                                     Editar
                                 </router-link>
-                                <button @click="deletePassword(password.id)"
+                                <button v-if="password.id !== undefined" @click="deletePassword(password.id)"
                                     class="text-red-600 hover:text-red-800 flex items-center">
                                     <TrashIcon class="w-5 h-5 mr-1" />
                                     Eliminar
@@ -51,13 +51,22 @@
 
 <script setup lang="ts">
 import { EyeIcon, PencilIcon, PlusCircleIcon, TrashIcon } from 'lucide-vue-next';
-import { ref, onMounted } from 'vue';
 import Swal from 'sweetalert2';
+import { onMounted, ref } from 'vue';
+import type { User } from '../../../models/User';
 import PasswordService from '../../../service/PasswordService';
 import UserService from '../../../service/UserService';
 
-const passwords = ref([]);
-const users = ref([]);
+interface Password {
+    id?: number;
+    content: string;
+    endAt: string;
+    user_id: number;
+}
+
+const passwords = ref<Password[]>([]);
+
+const users = ref<User[]>([]);
 
 const fetchPasswords = async () => {
     try {
@@ -65,19 +74,24 @@ const fetchPasswords = async () => {
             PasswordService.getPasswords(),
             UserService.getUsers()
         ]);
-        passwords.value = passwordRes.data;
+        passwords.value = passwordRes.data.map((p: any) => ({
+            id: p.id,
+            content: p.content ?? '',
+            endAt: p.endAt ?? '',
+            user_id: p.user_id ?? 0
+        }));
         users.value = userRes.data;
     } catch (error) {
         console.error("Error al obtener las contraseñas o usuarios:", error);
     }
 };
 
-const getUserName = (userId) => {
+const getUserName = (userId: number) => {
     const user = users.value.find((u) => u.id === userId);
     return user ? `${user.name} (${user.email})` : 'Sin usuario';
 };
 
-const deletePassword = async (id) => {
+const deletePassword = async (id: number) => {
     try {
         await PasswordService.deletePassword(id);
         passwords.value = passwords.value.filter((password) => password.id !== id);

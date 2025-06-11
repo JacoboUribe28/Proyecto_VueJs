@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { Address } from '../models/Address';
 
-const API_URL = import.meta.env.VITE_API_URL + '/api//addresses';
+const API_URL = import.meta.env.VITE_API_URL + '/api/addresses/';
 
 class AddressService {
     async getAddresses() {
@@ -29,7 +29,7 @@ class AddressService {
     }
 
     async getAddressesByUser(userId: number) {
-        const response = await axios.get<Address[]>(`${API_URL}/user/${userId}`);
+        const response = await axios.get<Address[]>(`${API_URL}user/${userId}`);
         return response;
     }
 }

@@ -2,7 +2,9 @@
 import Swal from "sweetalert2";
 import { onMounted, reactive, ref } from "vue";
 import { useRouter } from 'vue-router';
+import type { User } from '../../models/User';
 import AddressService from "../../service/AddressService";
+import UserService from '../../service/UserService';
 import { AddressValidator } from "../../utils/AddressValidators";
 
 const props = defineProps<{ addressId?: number }>();
@@ -17,6 +19,8 @@ const address = reactive({
 const errors = reactive<Record<string, string>>({});
 const isSubmitting = ref(false);
 const router = useRouter();
+const users = ref<User[]>([]);
+const selectedUserId = ref<number | null>(null);
 
 const validateField = (field: keyof typeof address) => {
     const result = AddressValidator.validateField(field, address[field]);
@@ -44,18 +48,35 @@ onMounted(async () => {
             console.error("Error al cargar dirección:", error);
         }
     }
+    // Cargar usuarios para el select
+    try {
+        const response = await UserService.getUsers();
+        users.value = response.data as User[];
+    } catch (error) {
+        console.error('Error al cargar usuarios:', error);
+    }
 });
 
 const submitForm = async () => {
     validateAllFields();
     if (Object.keys(errors).length > 0) return;
+    if (!selectedUserId.value) {
+        Swal.fire({
+            title: 'Error',
+            text: 'Debes seleccionar un usuario',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
     isSubmitting.value = true;
     try {
         let response;
         if (props.addressId) {
-            response = await AddressService.updateAddress(props.addressId, address);
+            response = await AddressService.updateAddress(props.addressId, { ...address, user_id: selectedUserId.value });
         } else {
-            response = await AddressService.createAddress(address);
+            // Usar la URL con userId en el método POST
+            response = await AddressService.createAddress({ ...address, user_id: selectedUserId.value });
         }
         if (response.status === 200 || response.status === 201) {
             Swal.fire({
@@ -96,6 +117,16 @@ const submitForm = async () => {
                 {{ props.addressId ? "Editar Dirección" : "Crear Dirección" }}
             </h2>
             <form @submit.prevent="submitForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="w-full md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Usuario:</label>
+                    <select v-model="selectedUserId"
+                        class="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        <option :value="null">Selecciona un usuario</option>
+                        <option v-for="user in users" :key="user.id" :value="user.id">
+                            {{ user.name }} ({{ user.email }})
+                        </option>
+                    </select>
+                </div>
                 <div class="w-full">
                     <label class="block text-sm font-medium text-gray-700">Calle:</label>
                     <input v-model="address.street" type="text" @input="validateField('street')"
